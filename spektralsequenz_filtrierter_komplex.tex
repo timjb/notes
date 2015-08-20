@@ -1,0 +1,179 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage[a4paper]{geometry}
+\usepackage{amssymb,amsthm}
+\usepackage{mathtools} % \coloneqq, \DeclarePairedDelimiter
+\usepackage{enumitem} % bessere Aufzählungen
+\usepackage{tikz}
+\usetikzlibrary{cd}
+
+\geometry{margin=2.5cm}
+
+\theoremstyle{definition}
+\newtheorem{lem}{Lemma}
+\newtheorem{defn}[lem]{Definition}
+
+% Mathe-Symbole
+\newcommand{\Z}{\mathbb{Z}} % Ganze Zahlen
+
+% Operatoren
+\DeclareMathOperator{\im}{im} % Image (Bild)
+
+% Abkürzungen
+\renewcommand{\dh}{d.\,h.} % das heißt
+
+% http://tex.stackexchange.com/questions/117732/tikz-and-babel-error
+% Es ist schierer Wahnsinn, welche Hacks LaTeX ben√∂tigt!
+\tikzset{
+  every picture/.prefix style={
+    execute at begin picture=\shorthandoff{"}
+  }
+}
+
+\begin{document}
+
+\section{Die Spektralsequenz eines filtrierten Komplexes}
+
+% Hier nach http://people.mpim-bonn.mpg.de/matschke/SpectralSequences.pdf
+
+\begin{defn}
+  Eine \emph{Filtrierung eines Kokettenkomplexes} $C^\bullet$ ist eine absteigende Folge
+  \[ C^\bullet \supseteq \ldots \supseteq F^{p-1} C^\bullet \supseteq F^p C^\bullet \supseteq F^{p+1} C^\bullet \supseteq \ldots \]
+ von Unterkomplexen.
+\end{defn}
+
+% TODO: Morphismus von filtrierten Komplexen?
+
+\begin{lem}
+  Es sei $C^\bullet$ ein filtrierter Kokettenkomplex.
+  Es gibt eine Spektralsequenz mit
+  \[ E_1^{pq} = H^{p+q}(F^p C^\bullet / F^{p+1} C^\bullet). \]
+  Angenommen, die Filtrierung ist
+  \begin{enumerate}[label=\alph*)]
+    \item \emph{gradweise nach unten beschränkt}, \dh{} für alle $q \in \Z$ gibt es ein $p \in \Z$ mit $F^p C^q = 0$,
+    \item \emph{ausschöpfend}, \dh{} für alle $q \in \Z$ ist $\cup_p F^p C^q = C^q$ und %(aus der ersten Bedingung folgt schon $\cap_p F^p C^q = 0$).
+    \item für alle $q \in \Z$ gibt es ein $P \in \Z$, sodass für alle $p \leq P$ gilt: Die Inklusion $F^p C^\bullet \hookrightarrow C^\bullet$ induziert einen Isomorphismus $H^q (F^p C^\bullet) \cong H^q(C^\bullet)$ in Kohomologie.
+  \end{enumerate}
+  Dann konvergiert die Spektralsequenz gegen $H^*(C^\bullet)$.
+\end{lem}
+
+Wir führen zunächst etwas neue Notation ein.
+Diese hilft, den Beweis verständlicher zu formulieren.
+Wir fassen im Folgenden den Kettenkomplex als ein einziges Modul $C \coloneqq \oplus_{n \in \Z} C^n$ anstatt als Folge von Moduln auf.
+Dieses Modul ist filtriert durch die Untermodule $F^p \coloneqq \oplus_{n \in \Z} F^p C^n$.
+Wir setzen $F^{-\infty} \coloneqq C$ und $F^{\infty} \coloneqq 0$.
+Die Korandabbildung fassen wir als Homomorphismen $d : C \to C$ mit $d \circ d = 0$ auf, der die Filtrierung von $C$ respektiert.
+
+Wir sind interessiert an der Kohomologie von $C^\bullet$, also an $H^*(C) \coloneqq \ker(d) / \im(d)$ und an der Kohomologie von $F^p / F^{p+1}$, also $H^*(F^p / F^{p+1}) \cong (d|_{F^p})^{-1}(F^{p+1}) / d(F^p)$.
+Wir geben nun eine Verallgemeinerung der Definition der Kohomologie von $C^\bullet$ und der Kohomologie des Quotientenkomplexes $F^p / F^q$: Statt Zykeln (\dh{} Elementen $c \in C$ mit $d(c) = 0$) betrachten wir \emph{$z$-Zykel}, das sind Elemente $c \in C$ mit $d(c) \in F^z$. Wir teilen diese durch die Menge $d(F^b)$ der \emph{$b$-Ränder} anstatt durch die Menge $d(C)$ der Ränder. Wir setzen
+
+\[ S[z, q, p, b] \coloneqq \frac{F^p \cap d^{-1}(F^z)}{(F^p \cap d^{-1}(F^z)) \cap (F^q + d(F ^b))}. \]
+
+% TODO: Bemerkung zur grafischen Notation von Matschke
+
+Wir haben als Spezialfälle
+\[
+  S[p,q,p,q] \cong F^p / F^q
+  \quad \text{und} \quad
+  S[q,q,p,p] \cong H^*(F^p / F^q).
+\]
+
+\begin{lem}\label{differential-homomorphism}
+  Es sei $z_1 \geq q_1 \geq p_1 = z_2 \geq b_1 = q_2 \geq p_2 \geq b_2$.
+  Dann ist folgende Abbildung ein wohldefinierter Homomorphismus:
+  \[
+    d^* : S[z_2, q_2, p_2, b_2] \to S[z_1, q_1, p_1, b_1], \quad
+    [c] \mapsto [d(c)].
+  \]
+\end{lem}
+
+\begin{proof}
+  Falls $[c] = 0$ in $S[z_2, q_2, p_2, b_2]$, so existieren $x \in F^{q_2}$ und $y \in F^{b_2}$ mit $c = x + d(y)$. Somit gilt $d^*[c] = [dc] = [d(x) + d^2(y)] = [d(x)] = 0$ in $S[z_1, q_1, p_1, b_1]$, da $F^{b_1} = F^{q_2}$.
+\end{proof}
+
+\begin{lem}\label{differential-isomorphism}
+  Es seien Filtrierungsindizes wie folgt gegeben:
+  \begin{center}\begin{tikzcd}[row sep=0.2cm, column sep=0.5cm]
+    &&&& z_3 \arrow[r, "\geq" description, phantom] \arrow[d, equal] &
+    q_3 \arrow[r, "\geq" description, phantom] \arrow[d, equal] &
+    p_3 \arrow[r, "\geq" description, phantom] &
+    b_3 \\
+
+    && z_2 \arrow[r, "\geq" description, phantom] \arrow[d, equal] &
+    q_2 \arrow[r, "\geq" description, phantom] \arrow[d, equal] &
+    p_2 \arrow[r, "\geq" description, phantom] &
+    b_2 \\
+
+    z_1 \arrow[r, "\geq" description, phantom] &
+    q_1 \arrow[r, "\geq" description, phantom] &
+    p_1 \arrow[r, "\geq" description, phantom] &
+    b_1
+  \end{tikzcd}\end{center}
+  Dann ist
+  \[
+    \alpha : S[q_1, q_2, p_2, p_3] \to
+    \frac{\ker(d^* : S[z_2, q_2, p_2, b_2] \to S[z_1, q_1, p_1, b_1])}{\im(d^* : S[z_3, q_3, p_3, b_3] \to S[z_2, q_2, p_2, b_2])}, \quad
+    [c] \mapsto [c]
+  \]
+  ein wohldefinierter Isomorphismus.
+\end{lem}
+
+\begin{proof}
+  Sei $A$ der Quotient auf der rechten Seite. \\[2pt]
+  \emph{Wohldefiniertheit}: Sei $[c] = 0$ in $S[q_1, q_2, p_2, p_3]$, \dh{} es gibt $e \in F^{q_2} = F^{b_1}$ und $f \in F^{p_1}$ mit $c = e + d(f)$. Dann ist $d^*[c] = [d(c)] = [d(e)] = 0$ in $S[z_1, q_1, p_1, b_1]$, also $c \in \ker(d^* : S[z_2, q_2, p_2, b_2] \to S[z_1, q_1, p_1, b_1])$.
+  Nun ist $f \in d^{-1}(F^{z_3})$, da $d(f) = c - e \in F^{p_2} = F^{z_3}$.
+  Es gilt $[c] = [e + d(f)] = [d(f)] = d^*[f] = 0$ in $A$. \\[2pt]
+  \emph{Injektivität}: Sei $c \in F^{p_2} \cap d^{-1}(F^{q_1})$ mit $[c] = 0$ in $A$.
+  Das heißt, es gibt $e \in F^{q_2}$, $f \in F^{b_2}$ und $g \in F^{p_3} \cap d^{-1}(F^{z_3})$ mit $c = e + d(f) + d(g)$.
+  Dann ist $[c] = [e + d(f+g)] = 0$ in $S[q_1, q_2, p_2, p_3]$, da $f+g \in F^{p_3}$. \\[2pt]
+  \emph{Surjektivität}: Sei $\tilde{c} \in F^{p_2} \cap d^{-1}(F^{z_2})$ mit $[\tilde{c}] \in \ker(d^* : S[z_2, q_2, p_2, b_2] \to S[z_1, q_1, p_1, b_1])$.
+  Das heißt, es gibt $e \in F^{q_1}$ und $f \in F^{b_1} = F^{q_2}$ mit $d(\tilde{c}) = e + d(f)$.
+  Dann ist $[\tilde{c}] = [\tilde{c} - f]$ in $S[q_1, q_2, p_2, p_3]$ mit $\tilde{c} - f \in F^{p_2} \cap d^{-1}(F^{q_1})$, da $d(\tilde{c} - f) = e \in F^{q_1}$.
+\end{proof}
+
+\begin{proof}[Beweis des Lemmas über Existenz der Spektralsequenz]
+  Wir beachten jetzt wieder, dass $C$ und damit $S[z, q, p, b]$ graduiert und $d$ ein Differential vom Grad $+1$ ist.
+  Es sei $S[z, q, p, b]^n$ die $n$-te Komponente.
+  Setze
+  \[ E_r^{pq} \coloneqq S[p\!+\!r, p\!+\!1, p, p\!-\!r\!+\!1]^{p+q}. \]
+  Die Differentiale sind
+  \[
+    d_r^{pq}
+    \enspace : \enspace
+    \underbrace{S[p\!+\!r, p\!+\!1, p, p\!-\!r\!+\!1]^{p+q}}_{= E_r^{p,q}} \to \underbrace{S[p\!+\!2r, p\!+\!r\!+\!1, p\!+\!r, p\!+\!1]^{p+q+1}}_{= E_r^{p+r,q-r+1}}, \quad
+    [c] \mapsto [d(c)].
+  \]
+  Sie sind wohldefiniert nach Lemma~\ref{differential-homomorphism}.und
+  wegen Lemma~\ref{differential-isomorphism} ist
+  \[
+    \alpha_r^{pq} : H^{p,q}(E_r) = \ker(d^{pq}_r) / \im(d^{p-r,q+r-1}_r) \to E_{r+1}^{pq}, \quad
+    [c] \mapsto [c]
+  \]
+  ein wohldefinierter Isomorphismus.
+
+  \emph{Beweis der Konvergenz}:
+  Es seien $p, q \in \Z$.
+  Wegen Bedingung a) gibt es ein $R_1 \geq 0$, sodass $F^{p+R_1} C^{p+q+1} = 0$.
+  Für $r \geq R_1$ ist damit $E^{p+r,q-r+1}_r$ als Subquotient (\dh{} Quotient eines Untermoduls) von $F^{p+R_1} C^{p+q+1}$ Null.
+  Folglich verschwindet auch das Differential $d_r^{pq}$.
+  Wegen Bedingung c) gibt es ein $S \in \Z$, sodass $F^s C^\bullet \hookrightarrow C^\bullet$ und somit auch $F^s C^\bullet \hookrightarrow F^{s-1} C^\bullet$ für $s \leq S$ einen Isomorphismus in $H^{p+q-1}$ und $H^{p+q}$ induziert.
+  Anhand der langen exakten Sequenz zu $0 \to F^s C^\bullet \to F^{s-1} C^\bullet \to F^{s-1} C^\bullet / F^s C^\bullet \to 0$ sieht man, dass $H^{p+q-1}(F^{s-1} C^\bullet / F^s C^\bullet) = 0$.
+  Somit ist $E_r^{p-r,q+r-1}$ für $r \geq R_2 \coloneqq p - s + 1$ als Submodul von $H^{p+q-1}(F^{p-r} C^\bullet / F^{p-r+1} C^\bullet)$ Null.
+  Folglich verschwindet auch $d_r^{p-r,q+r-1}$.
+  Mit $R \coloneqq \max(R_1, R_2)$ gilt dann $E^{pq}_R \cong E^{pq}_{R+1} \cong \ldots \cong E^{pq}_\infty$.
+
+  Sei $H^n(C^\bullet)$ absteigend filtriert durch $F^p H^n(C^\bullet) \coloneqq \im(i^* : H^n(F^p C^\bullet) \to H^n(C^\bullet))$.
+  Für $r \geq R$ ist
+  \[ E^{pq}_\infty \cong E^{pq}_r = \frac{F^p C^{p+q} \cap d^{-1}(0)}{(F^p C^{p+q} \cap d^{-1}(0)) \cap (F^{p+1} C^{p+q} + d(F^{p-r+1} C^{p+q-1}))} = S[\infty,p+1,p,p-r+1]^{p+q}. \]
+  Es ist daher $F^p H^{p+q}(C^\bullet) / F^{p+1} H^{p+q}(C^\bullet) \cong S[\infty, p+1, p, -\infty]^{p+q}$ ein Quotient von $E^{pq}_\infty$.
+  Tatsächlich gilt $S[\infty, p+1, p, -\infty]^{p+q} \cong E^{pq}_\infty$, denn:
+  Sei $c \in F^p C^{p+q} \cap d^{-1}(0)$ mit $[c] = 0$ in $S[\infty, p+1, p, -\infty]^{p+q}$.
+  Dann gibt es ein $e \in F^{p+1} C^{p+q}$ und ein $f \in C^{p+q-1}$ mit $c = e + d(f)$.
+  Wegen Bedingung b) gibt es ein $\tilde{p} \in \Z$ mit $f \in F^{\tilde{p}} C^{p+q+1}$.
+  Wähle $r$ so, dass $r \geq R$ und $p-r+1 \leq \tilde{p}$.
+  Dann ist $[c] = [e]+[d(f)] = 0$ in $E^{pq}_r \cong E^{pq}_\infty$.
+\end{proof}
+
+\end{document}
